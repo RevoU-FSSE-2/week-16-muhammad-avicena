@@ -5,12 +5,16 @@ import {
   updateBook,
   deleteBook,
 } from "../controller/bookController";
+import {
+  userAuthentication,
+  adminAuthorization,
+} from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.get("/", getAllBooks);
-router.post("/", createBook);
-router.put("/:id", updateBook);
-router.delete("/:id", deleteBook);
+router.get("/", userAuthentication, getAllBooks);
+router.post("/", adminAuthorization, createBook);
+router.put("/:id", adminAuthorization, updateBook);
+router.delete("/:id", adminAuthorization, deleteBook);
 
 export default router;
