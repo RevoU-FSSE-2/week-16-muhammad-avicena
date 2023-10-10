@@ -10,6 +10,14 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
     const authService = new AuthService(authDao);
     const result = await authService.loginUser(username, password);
     if (result.success) {
+      res.cookie("access_token", result.message.accessToken, {
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      res.cookie("refresh_token", result.message.refreshToken, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
       return res.status(200).json({
         success: true,
         message: "Successfully login",

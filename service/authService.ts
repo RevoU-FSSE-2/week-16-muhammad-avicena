@@ -1,9 +1,12 @@
 import { AuthDaoInterface } from "types";
 import { JwtPayload, sign } from "jsonwebtoken";
 import { addDays } from "date-fns";
+import NodeCache from "node-cache";
 import { JWT_SIGN } from "../middleware/config/jwtConfig.js";
 import bcrypt from "bcrypt";
 import StandardError from "../constants/standardError";
+
+const failedLoginAttemptsCache = new NodeCache({ stdTTL: 30 }) as any;
 
 class AuthService {
   private authDao: AuthDaoInterface;
@@ -13,9 +16,21 @@ class AuthService {
   }
 
   async loginUser(username: string, password: string) {
+    const loginAttempts = failedLoginAttemptsCache.get(username) || 0;
+    console.log(loginAttempts);
+
+    if (loginAttempts >= 4) {
+      throw new StandardError({
+        success: false,
+        message: "Too many failed login attempts. Please try again later.",
+        status: 429,
+      });
+    }
+
     try {
       const user = await this.authDao.loginUser({ username, password });
       if (!user) {
+        failedLoginAttemptsCache.set(username, loginAttempts + 1);
         throw new StandardError({
           success: false,
           message: "Incorrect username or password. Please try again.",
@@ -28,12 +43,12 @@ class AuthService {
       if (passwordMatch) {
         if (!JWT_SIGN) throw new Error("JWT_SIGN is not defined");
 
+        const accessTokenExpiration = addDays(new Date(), 1);
         const accessToken = sign(
           { username: user.username, id: user._id, role: user.role },
           JWT_SIGN,
-          { expiresIn: "3h" }
+          { expiresIn: "24h" }
         );
-
         const refreshTokenPayload: JwtPayload = {
           username: user.username,
           id: user._id,
@@ -43,7 +58,7 @@ class AuthService {
           expiresIn: "7d",
         });
 
-        const accessTokenExpiration = addDays(new Date(), 7);
+        await failedLoginAttemptsCache.del(username);
 
         return {
           success: true,
@@ -54,6 +69,7 @@ class AuthService {
           },
         };
       } else {
+        failedLoginAttemptsCache.set(username, loginAttempts + 1);
         throw new StandardError({
           success: false,
           message: "Incorrect username or password. Please try again.",
