@@ -42,13 +42,14 @@ async function createBook(req: Request, res: Response, next: NextFunction) {
 
 async function updateBook(req: Request, res: Response, next: NextFunction) {
   const { db } = req;
+  const accessToken = req.cookies.access_token;
   const { id } = req.params;
-  const { name, author } = req.body;
+  const { name } = req.body;
 
   try {
     const bookDao = new BookDao(db);
     const bookService = new BookService(bookDao);
-    const result = await bookService.updateBook(id, name, author);
+    const result = await bookService.updateBook(accessToken, id, name);
     if (result.success) {
       return res.status(200).json({
         success: true,

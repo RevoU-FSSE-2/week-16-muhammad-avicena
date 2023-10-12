@@ -36,11 +36,10 @@ class BookService {
     }
   }
 
-  async updateBook(id: string, name: string, author: string) {
-    console.log(id, name, author);
+  async updateBook(accessToken: string, id: string, name: string) {
     try {
-      const books = await this.bookDao.updateBook(id, name, author);
-      return { success: true, message: books };
+      const books = await this.bookDao.updateBook(accessToken, id, name);
+      return { success: true, message: books._id };
     } catch (error: any) {
       console.log(error);
       throw new StandardError({
