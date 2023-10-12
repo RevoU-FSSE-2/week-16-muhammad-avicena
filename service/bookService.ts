@@ -8,9 +8,9 @@ class BookService {
     this.bookDao = bookDao;
   }
 
-  async getAllBooks() {
+  async getAllBooks(accessToken: string) {
     try {
-      const books = await this.bookDao.findAllBooks();
+      const books = await this.bookDao.findAllBooks(accessToken);
       return { success: true, message: books };
     } catch (error: any) {
       console.log(error);

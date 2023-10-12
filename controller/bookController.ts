@@ -4,10 +4,11 @@ import { NextFunction, Request, Response } from "express";
 
 async function getAllBooks(req: Request, res: Response, next: NextFunction) {
   const { db } = req;
+  const accessToken = req.cookies.access_token;
   try {
     const bookDao = new BookDao(db);
     const bookService = new BookService(bookDao);
-    const result = await bookService.getAllBooks();
+    const result = await bookService.getAllBooks(accessToken);
     if (result.success) {
       return res.status(200).json({
         success: true,

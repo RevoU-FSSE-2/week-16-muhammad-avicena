@@ -1,4 +1,6 @@
 import { Collection, Db, ObjectId } from "mongodb";
+import { JwtPayload, verify } from "jsonwebtoken";
+import { JWT_SIGN } from "../middleware/config/jwtConfig.js";
 import StandardError from "../constants/standardError";
 
 interface Database {
@@ -12,8 +14,21 @@ class BookDao {
     this.db = db as Database;
   }
 
-  async findAllBooks() {
-    const books = await this.db.collection("books").find({}).toArray();
+  async findAllBooks(accessToken: string) {
+    if (!JWT_SIGN) throw new Error("JWT_SIGN is not defined");
+
+    const accessTokenPayload = verify(accessToken, JWT_SIGN) as JwtPayload;
+
+    let query: Record<string, any> = { author: accessTokenPayload.username };
+
+    if (
+      accessTokenPayload.role === "admin" ||
+      accessTokenPayload.role === "manager"
+    ) {
+      query = {};
+    }
+
+    const books = await this.db.collection("books").find(query).toArray();
     if (!books) {
       throw new StandardError({
         status: 404,
@@ -21,11 +36,27 @@ class BookDao {
         success: false,
       });
     }
+    
     return books;
   }
 
   async createBook(name: string, author: string) {
-    const books = await this.db.collection("books").insertOne({ name, author });
+    const user = await this.db
+      .collection("users")
+      .findOne({ username: author });
+    console.log(user);
+
+    if (!user) {
+      throw new StandardError({
+        status: 404,
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    const books = await this.db
+      .collection("books")
+      .insertOne({ name, author: user.username });
     return books;
   }
 

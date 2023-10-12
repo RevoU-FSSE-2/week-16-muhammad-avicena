@@ -16,18 +16,18 @@ class AuthService {
   }
 
   async loginUser(username: string, password: string) {
-    const loginAttempts = failedLoginAttemptsCache.get(username) || 1;
-
-    if (loginAttempts >= 5) {
-      throw new StandardError({
-        success: false,
-        message: "Too many failed login attempts. Please try again later.",
-        status: 429,
-      });
-    }
-
     try {
       const user = await this.authDao.loginUser({ username, password });
+      const loginAttempts = failedLoginAttemptsCache.get(username) || 1;
+
+      if (loginAttempts >= 5) {
+        throw new StandardError({
+          success: false,
+          message: "Too many failed login attempts. Please try again later.",
+          status: 429,
+        });
+      }
+
       if (!user) {
         failedLoginAttemptsCache.set(username, loginAttempts + 1);
         throw new StandardError({
@@ -133,17 +133,17 @@ class AuthService {
 
     const decodedRefreshToken = verify(refreshToken, JWT_SIGN) as JwtPayload;
 
-    // if (
-    //   !decodedRefreshToken ||
-    //   !decodedRefreshToken.exp ||
-    //   typeof decodedRefreshToken.exp !== "number"
-    // ) {
-    //   throw new StandardError({
-    //     success: false,
-    //     status: 401,
-    //     message: "Refresh token is invalid or has expired. Please login again",
-    //   });
-    // }
+    if (
+      !decodedRefreshToken ||
+      !decodedRefreshToken.exp ||
+      typeof decodedRefreshToken.exp !== "number"
+    ) {
+      throw new StandardError({
+        success: false,
+        status: 401,
+        message: "Refresh token is invalid or has expired. Please login again",
+      });
+    }
 
     if (decodedRefreshToken.exp < Date.now() / 1000) {
       throw new StandardError({
