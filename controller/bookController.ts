@@ -23,11 +23,12 @@ async function getAllBooks(req: Request, res: Response, next: NextFunction) {
 
 async function createBook(req: Request, res: Response, next: NextFunction) {
   const { db } = req;
+  const accessToken = req.cookies.access_token;
   const { name, author } = req.body;
   try {
     const bookDao = new BookDao(db);
     const bookService = new BookService(bookDao);
-    const result = await bookService.createBook(name, author);
+    const result = await bookService.createBook(accessToken, name, author);
     if (result.success) {
       return res.status(200).json({
         success: true,

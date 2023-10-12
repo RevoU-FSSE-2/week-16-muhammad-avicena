@@ -22,9 +22,9 @@ class BookService {
     }
   }
 
-  async createBook(name: string, author: string) {
+  async createBook(accessToken: string, name: string, author: string) {
     try {
-      const books = await this.bookDao.createBook(name, author);
+      const books = await this.bookDao.createBook(accessToken, name, author);
       return { success: true, message: books.insertedId };
     } catch (error: any) {
       console.log(error);

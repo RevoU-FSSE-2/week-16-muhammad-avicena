@@ -39,11 +39,14 @@ class BookDao {
     return books;
   }
 
-  async createBook(name: string, author: string) {
-    const user = await this.db
-      .collection("users")
-      .findOne({ username: author });
-    console.log(user);
+  async createBook(accessToken: string, name: string) {
+    if (!JWT_SIGN) throw new Error("JWT_SIGN is not defined");
+
+    const accessTokenPayload = verify(accessToken, JWT_SIGN) as JwtPayload;
+
+    const user = await this.db.collection("users").findOne({
+      username: accessTokenPayload.username,
+    });
 
     if (!user) {
       throw new StandardError({
@@ -55,7 +58,7 @@ class BookDao {
 
     const books = await this.db
       .collection("books")
-      .insertOne({ name, author: user.username });
+      .insertOne({ name, author: accessTokenPayload.username });
     return books;
   }
 
