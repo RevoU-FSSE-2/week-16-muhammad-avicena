@@ -12,6 +12,8 @@ export interface AuthDaoInterface {
     password: string;
     email: string;
   }): Promise<any>;
+  resetPasswordRequest(email: string): Promise<any>;
+  resetPassword(email: string, password: string): Promise<any>;
 }
 
 export interface UserDaoInterface {
