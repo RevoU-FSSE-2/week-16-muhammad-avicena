@@ -1,8 +1,8 @@
 export interface BookDaoInterface {
-  findAllBooks(): Promise<any>;
-  createBook(name: string, author: string): Promise<any>;
-  updateBook(id: string, name: string, author: string): Promise<any>;
-  deleteBook(id: string): Promise<any>;
+  findAllBooks(accessToken: string): Promise<any>;
+  createBook(accessToken: string, name: string, author: string): Promise<any>;
+  updateBook(accessToken: string, id: string, name: string): Promise<any>;
+  deleteBook(id: string, accessToken: string): Promise<any>;
 }
 
 export interface AuthDaoInterface {
