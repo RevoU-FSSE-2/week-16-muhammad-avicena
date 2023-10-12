@@ -50,10 +50,10 @@ class BookService {
     }
   }
 
-  async deleteBook(id: string) {
+  async deleteBook(id: string, accessToken: string) {
     try {
-      const books = await this.bookDao.deleteBook(id);
-      return { success: true, message: books.deletedCount };
+      const books = await this.bookDao.deleteBook(id, accessToken);
+      return { success: true, message: books };
     } catch (error: any) {
       console.log(error);
       throw new StandardError({

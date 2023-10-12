@@ -66,10 +66,11 @@ async function updateBook(req: Request, res: Response, next: NextFunction) {
 async function deleteBook(req: Request, res: Response, next: NextFunction) {
   const { db } = req;
   const { id } = req.params;
+  const accessToken = req.cookies.access_token;
   try {
     const bookDao = new BookDao(db);
     const bookService = new BookService(bookDao);
-    const result = await bookService.deleteBook(id);
+    const result = await bookService.deleteBook(id, accessToken);
     if (result.success) {
       return res.status(200).json({
         success: true,

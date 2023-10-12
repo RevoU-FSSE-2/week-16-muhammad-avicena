@@ -91,11 +91,16 @@ class BookDao {
     return books;
   }
 
-  async deleteBook(id: string) {
+  async deleteBook(id: string, accessToken: string) {
+    if (!JWT_SIGN) throw new Error("JWT_SIGN is not defined");
+
+    const accessTokenPayload = verify(accessToken, JWT_SIGN) as JwtPayload;
+
     const objectId = new ObjectId(id);
     const books = await this.db
       .collection("books")
       .findOneAndDelete({ _id: objectId });
+
     if (!books) {
       throw new StandardError({
         status: 404,
@@ -103,6 +108,15 @@ class BookDao {
         success: false,
       });
     }
+
+    if (accessTokenPayload.username !== books.author) {
+      throw new StandardError({
+        status: 403,
+        message: "You are not allowed to delete this book",
+        success: false,
+      });
+    }
+
     return books;
   }
 }
