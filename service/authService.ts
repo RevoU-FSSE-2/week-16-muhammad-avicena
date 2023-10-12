@@ -1,5 +1,6 @@
 import { AuthDaoInterface } from "types";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 import { addDays } from "date-fns";
 import NodeCache from "node-cache";
 import { JWT_SIGN } from "../middleware/config/jwtConfig.js";
@@ -7,6 +8,7 @@ import bcrypt from "bcrypt";
 import StandardError from "../constants/standardError";
 
 const failedLoginAttemptsCache = new NodeCache({ stdTTL: 600 }) as any;
+const cacheKey = new NodeCache({ stdTTL: 300 }) as any;
 
 class AuthService {
   private authDao: AuthDaoInterface;
@@ -159,6 +161,61 @@ class AuthService {
     });
 
     return { success: true, message: { accessToken } };
+  }
+
+  async resetPasswordRequest(email: string) {
+    try {
+      await this.authDao.resetPasswordRequest(email);
+
+      const tokenResetPassword = uuidv4();
+
+      cacheKey.set(tokenResetPassword, email, 3600);
+
+      return {
+        success: true,
+        message: "Password reset link sent successfully",
+        data: tokenResetPassword,
+      };
+    } catch (error: any) {
+      console.log(error);
+      throw new StandardError({
+        success: false,
+        status: error.status,
+        message: error.message,
+      });
+    }
+  }
+
+  async resetPassword(token: string, password: string) {
+    try {
+      const email = cacheKey.get(token);
+
+      if (!email) {
+        throw new StandardError({
+          success: false,
+          status: 401,
+          message: "Invalid or expired token",
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await this.authDao.resetPassword(email, hashedPassword);
+
+      cacheKey.del(token);
+
+      return {
+        success: true,
+        message: "Password reset successfully",
+      };
+    } catch (error: any) {
+      console.log(error);
+      throw new StandardError({
+        success: false,
+        status: error.status,
+        message: error.message,
+      });
+    }
   }
 }
 

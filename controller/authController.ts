@@ -102,4 +102,57 @@ async function refreshAccessToken(
   }
 }
 
-export { loginUser, registerUser, logoutUser, refreshAccessToken };
+async function resetPasswordRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { db } = req;
+  const { email } = req.body;
+  try {
+    const authDao = new AuthDao(db);
+    const authService = new AuthService(authDao);
+    const result = await authService.resetPasswordRequest(email);
+    if (result.success) {
+      return res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    }
+  } catch (error: any) {
+    next(error);
+  }
+}
+
+async function resetPassword(req: Request, res: Response, next: NextFunction) {
+  const { db } = req;
+  const { token } = req.query;
+  const { newPassword } = req.body;
+
+  try {
+    if (typeof token !== "string") {
+      throw new Error("Token is not a string");
+    }
+    const authDao = new AuthDao(db);
+    const authService = new AuthService(authDao);
+    const result = await authService.resetPassword(token, newPassword);
+    if (result.success) {
+      return res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
+export {
+  loginUser,
+  registerUser,
+  logoutUser,
+  refreshAccessToken,
+  resetPassword,
+  resetPasswordRequest,
+};

@@ -63,6 +63,24 @@ class AuthDao {
     const result = await this.db.collection("users").insertOne(userData);
     return result;
   }
+
+  async resetPasswordRequest(email: string) {
+    const user = await this.db.collection("users").findOne({ email });
+    if (!user) {
+      throw new StandardError({
+        status: 404,
+        message: "User not found.",
+        success: false,
+      });
+    }
+    return user;
+  }
+
+  async resetPassword(email: string, password: string) {
+    await this.db
+      .collection("users")
+      .findOneAndUpdate({ email }, { $set: { password } });
+  }
 }
 
 export default AuthDao;
