@@ -85,9 +85,9 @@ class AuthService {
     }
   }
 
-  async registerUser(username: string, password: string) {
+  async registerUser(username: string, password: string, email: string) {
     try {
-      if (!username || !password) {
+      if (!username || !password || !email) {
         throw new StandardError({
           success: false,
           message: "Invalid input data. Please try again.",
@@ -108,6 +108,7 @@ class AuthService {
         const user = await this.authDao.registerUser({
           username,
           password: hashedPassword,
+          email,
         });
         return { success: true, message: user.insertedId };
       } else {

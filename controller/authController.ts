@@ -31,11 +31,11 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
 
 async function registerUser(req: Request, res: Response, next: NextFunction) {
   const { db } = req;
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
   try {
     const authDao = new AuthDao(db);
     const authService = new AuthService(authDao);
-    const result = await authService.registerUser(username, password);
+    const result = await authService.registerUser(username, password, email);
     if (result.success) {
       return res.status(200).json({
         success: true,

@@ -10,6 +10,7 @@ interface UserData {
   username: string;
   password: string;
   role: string;
+  email: string;
   createdDate: string;
 }
 
@@ -33,8 +34,12 @@ class AuthDao {
     return user;
   }
 
-  async registerUser(userInfo: { username: string; password: string }) {
-    const { username, password } = userInfo;
+  async registerUser(userInfo: {
+    username: string;
+    password: string;
+    email: string;
+  }) {
+    const { username, password, email } = userInfo;
     const newDate = new Date();
     const createdDate = format(newDate, "yyyy-MM-dd");
     const role = "member";
@@ -43,6 +48,7 @@ class AuthDao {
       username,
       password,
       role,
+      email,
       createdDate,
     };
 

@@ -7,7 +7,11 @@ export interface BookDaoInterface {
 
 export interface AuthDaoInterface {
   loginUser(userInfo: { username: string; password: string }): Promise<any>;
-  registerUser(userInfo: { username: string; password: string }): Promise<any>;
+  registerUser(userInfo: {
+    username: string;
+    password: string;
+    email: string;
+  }): Promise<any>;
 }
 
 export interface UserDaoInterface {
