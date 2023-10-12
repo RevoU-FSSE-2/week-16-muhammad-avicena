@@ -12,7 +12,7 @@ const userAuthentication = (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.cookies.access_token;
 
   if (!authHeader) {
     throw new StandardError({
@@ -21,12 +21,11 @@ const userAuthentication = (
       message: "Unauthorized",
     });
   } else {
-    const token = authHeader.split(" ")[1];
     try {
       if (!JWT_SIGN) {
         throw new Error("JWT_SIGN is not defined");
       }
-      const decodedToken = jwt.verify(token, JWT_SIGN);
+      const decodedToken = jwt.verify(authHeader, JWT_SIGN);
       console.log("Verified user:", decodedToken);
       next();
     } catch (error) {
@@ -38,7 +37,7 @@ const userAuthentication = (
 const authorizationMiddleware =
   (allowedRoles: string | string[]) =>
   (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.cookies.access_token;
 
     if (!authHeader) {
       throw new StandardError({
@@ -47,20 +46,19 @@ const authorizationMiddleware =
         message: "Unauthorized",
       });
     } else {
-      const token = authHeader.split(" ")[1];
-
       try {
         if (!JWT_SIGN) {
           throw new Error("JWT_SIGN is not defined");
         }
-        const decodedToken = jwt.verify(token, JWT_SIGN) as JwtInterface;
+        const decodedToken = jwt.verify(authHeader, JWT_SIGN) as JwtInterface;
         if (allowedRoles.includes(decodedToken.role)) {
           next();
         } else {
           throw new StandardError({
             success: false,
-            status: 401,
-            message: "Unauthorized",
+            status: 403,
+            message:
+              "Access Denied. You are not allowed to access this resource.",
           });
         }
       } catch (error) {
