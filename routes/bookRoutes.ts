@@ -7,14 +7,13 @@ import {
 } from "../controller/bookController";
 import {
   userAuthentication,
-  adminAuthorization,
 } from "../middleware/authMiddleware";
 
 const router = Router();
 
 router.get("/", userAuthentication, getAllBooks);
-router.post("/", adminAuthorization, createBook);
-router.put("/:id", adminAuthorization, updateBook);
-router.delete("/:id", adminAuthorization, deleteBook);
+router.post("/", userAuthentication, createBook);
+router.put("/:id", userAuthentication, updateBook);
+router.delete("/:id", userAuthentication, deleteBook);
 
 export default router;
