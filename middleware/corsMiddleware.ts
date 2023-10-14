@@ -4,6 +4,7 @@ import { Application, Request } from "express";
 const origin = [
   "https://week15-api-avicena-dev.cyclic.cloud",
   "https://week15.avicena.dev",
+  "http://localhost:5173",
 ];
 const partnerOrigin = [
   "https://week15-defficharlina-fe.vercel.app",
@@ -33,7 +34,7 @@ const corsOptionsDelegate = (
 };
 
 const corsMiddleware = (app: Application) => {
-  app.use(cors(corsOptionsDelegate));
+  app.use(cors());
 };
 
 export default corsMiddleware;
