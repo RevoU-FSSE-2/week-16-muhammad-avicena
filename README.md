@@ -2,7 +2,7 @@
 
 <h1 align="center">Fancy to see you here <img src="https://raw.githubusercontent.com/muhammad-avicena/profile/master/wave.gif" width="30px" height="30px" /> </h1>
 
-hi, I'm Muhammad Avicena. In this repo, I build app that is designed to test CORS, protect against Clickjacking, and prevent XSS attacks.
+hi, I'm Muhammad Avicena. In this repo, I built advanced backend security that is designed to test CORS, protect against Clickjacking, and prevent XSS attacks.
 
 I am committed to staying up-to-date with industry trends and using the latest tools to develop innovative solutions that surpass expectations.
 Interested to have collaboration ? Find me on:
@@ -18,18 +18,15 @@ Interested to have collaboration ? Find me on:
 - TypeScript
 - MongoDB
 - Unit test by Jest, Mocha & Supertest
-- External/Internal Source:
-  - SweetAlert2 for alert
-  - MUI
 
 ## HOW TO USE 🌟
 
 ```bash
 # Clone this repository
-git clone https://github.com/RevoU-FSSE-2/week-15-muhammad-avicena.git
+git clone https://github.com/RevoU-FSSE-2/week-16-muhammad-avicena.git
 
 # Change directory
-cd week-15-muhammad-avicena
+cd week-16-muhammad-avicena
 
 # Intall dependancy
 pnpm install | npm install | yarn install
@@ -46,10 +43,12 @@ pnpm run dev | npm run dev | yarn run dev
 
 ![security](./assets-github/security.png)
 
+## API LIST
+
+![API-list](./assets-github/apilist.png)
+
 ## DEPLOYMENT ⚙️
 
-The project has been successfully deployed using Vercel. You can access the production version of the website by following this link: [https://week15.avicena.dev](https://week15.avicena.dev)
-
-Front end Github: [https://github.com/muhammad-avicena/week15-fe](https://github.com/muhammad-avicena/week15-fe)
+The project has been successfully deployed using Vercel. You can access the production version of the website by following this link: [https://week16-api-avicena-dev.cyclic.cloud](https://week16-api-avicena-dev.cyclic.cloud)
 
 Feel free to explore the website and try out the different features. I appreciate any feedback and suggestions to further improve the user experience.
